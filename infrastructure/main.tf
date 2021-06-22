@@ -44,8 +44,14 @@ resource openstack_compute_instance_v2 dc {
   security_groups   = var.security-groups
   user_data = <<-EOT
   #ps1
+  # Change Admin password
+  $UserAccount = Get-LocalUser -Name "Admin"
+  $userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
+  $UserAccount | Set-LocalUser -Password $userPassword
+  # Install AD feature
   Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools
   $safeModePassword = ConvertTo-SecureString "F/@p]*/*D/#2hC.6" -AsPlainText -Force
+  # Set up AD Forest
   Install-ADDSForest `
     -DomainName "crc.testing" `
     -CreateDnsDelegation:$false `
@@ -61,13 +67,13 @@ resource openstack_compute_instance_v2 dc {
     -SafeModeAdministratorPassword $safeModePassword
   Restart-Computer
   # This should be done after restart
-  # $userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
-  # New-ADUser `
-  #   -SamAccountName "crc-user" `
-  #   -Name "crc" `
-  #   -AccountPassword $userPassword `
-  #   -ChangePasswordAtLogon $False `
-  #   -Enabled $True
+  # # $userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
+  # # New-ADUser `
+  # #   -SamAccountName "crc-user" `
+  # #   -Name "crc" `
+  # #   -AccountPassword $userPassword `
+  # #   -ChangePasswordAtLogon $False `
+  # #   -Enabled $True
   EOT
 
   metadata = {
@@ -77,7 +83,7 @@ resource openstack_compute_instance_v2 dc {
   network {
     uuid = openstack_networking_network_v2.this.id
     # we need fixed ip to setup the primary DC
-    fixed_ip_v4 = var.dc-fixed-ip
+    # fixed_ip_v4 = var.dc-fixed-ip
     
   }
 
