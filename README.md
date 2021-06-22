@@ -18,5 +18,6 @@ podman run -it --rm \
         -e OS_TENANT_ID=XXX \
         -e OS_PROJECT_DOMAIN_ID=XXX \
         -e OS_PASSWORD=XXX \
+        -e OS_USER_DOMAIN_NAME=XXX \
         localhost/terraform:1.0.0
 ```
