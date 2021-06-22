@@ -1,19 +1,3 @@
-variable private-network-name { default = "ms-corporate" }
-variable private-subnet-name { default = "ms-corporate-subnet" }
-variable private-subnet-cidr { default = "192.168.199.0/24" }
-variable router-name { default = "ms-corporate-router" }
-#https://docs.engineering.redhat.com/pages/viewpage.action?pageId=63300728#PSIOpenStackOnboarding-OpenStackNetwork
-variable public-network-name { default = "provider_net_shared_3" }
-variable dc-image-name { default = "win-2019-serverstandard-x86_64-released_v2" }
-variable dc-flavor-name { default = "m1.large" }
-variable guest-image-name { default = "Fedora-Cloud-Base-33" } 
-variable guest-flavor-name { default = "m1.medium" }
-variable flavor-name { default = "m1.medium" }
-variable security-groups { 
-  type = list(string) 
-  default = ["default"] 
-}
-
 # Import data from existing resources
 data openstack_networking_network_v2 public-network { name = var.public-network-name }
 
@@ -22,12 +6,12 @@ data openstack_compute_keypair_v2 this { name = "default" }
 
 # Crete networking
 resource openstack_networking_network_v2 this {
-  name           = var.private-network-name
+  name           = var.network-name
   admin_state_up = "true"
 }
 
 resource openstack_networking_subnet_v2 this {
-  name       = var.private-subnet-name 
+  name       = "${var.network-name}-private" 
   network_id = openstack_networking_network_v2.this.id
   cidr       = var.private-subnet-cidr
   ip_version = 4
@@ -60,9 +44,30 @@ resource openstack_compute_instance_v2 dc {
   security_groups   = var.security-groups
   user_data = <<-EOT
   #ps1
-  # Install AD services
-  install-windowsfeature AD-Domain-Services
-  #https://social.technet.microsoft.com/wiki/contents/articles/52765.windows-server-2019-step-by-step-setup-active-directory-environment-using-powershell.aspx#Step_3_Static_IP
+  Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools
+  $safeModePassword = ConvertTo-SecureString "F/@p]*/*D/#2hC.6" -AsPlainText -Force
+  Install-ADDSForest `
+    -DomainName "crc.testing" `
+    -CreateDnsDelegation:$false `
+    -DatabasePath "C:\Windows\NTDS" `
+    -DomainMode "7" `
+    -DomainNetbiosName "crc" `
+    -ForestMode "7" `
+    -InstallDns:$true `
+    -LogPath "C:\Windows\NTDS" `
+    -NoRebootOnCompletion:$True `
+    -SysvolPath "C:\Windows\SYSVOL" `
+    -Force:$true `
+    -SafeModeAdministratorPassword $safeModePassword
+  Restart-Computer
+  # This should be done after restart
+  # $userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
+  # New-ADUser `
+  #   -SamAccountName "crc-user" `
+  #   -Name "crc" `
+  #   -AccountPassword $userPassword `
+  #   -ChangePasswordAtLogon $False `
+  #   -Enabled $True
   EOT
 
   metadata = {
@@ -70,7 +75,10 @@ resource openstack_compute_instance_v2 dc {
   }
 
   network {
-    name = var.private-network-name
+    uuid = openstack_networking_network_v2.this.id
+    # we need fixed ip to setup the primary DC
+    fixed_ip_v4 = var.dc-fixed-ip
+    
   }
 
   depends_on = [
