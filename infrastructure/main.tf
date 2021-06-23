@@ -1,10 +1,10 @@
+# Data
 # Import data from existing resources
 data openstack_networking_network_v2 public-network { name = var.public-network-name }
-
 # Import references for persistent components
 data openstack_compute_keypair_v2 this { name = "default" }
 
-# Crete networking
+# Networking
 resource openstack_networking_network_v2 this {
   name           = var.network-name
   admin_state_up = "true"
@@ -17,7 +17,6 @@ resource openstack_networking_subnet_v2 this {
   ip_version = 4
 }
 
-# Link public network with private network
 resource openstack_networking_router_v2 this {
   name                = var.router-name
   admin_state_up      = true
@@ -29,12 +28,8 @@ resource openstack_networking_router_interface_v2 router_interface_1 {
   subnet_id = openstack_networking_subnet_v2.this.id
 }
 
-# Create floating ip 
-resource openstack_networking_floatingip_v2 dc {
-  pool = var.public-network-name
-}
-
-# Create ephemeral resources
+# Instances
+# primary DC
 resource openstack_compute_instance_v2 dc {
 
   name              = "dc"
@@ -65,7 +60,7 @@ resource openstack_compute_instance_v2 dc {
     -SysvolPath "C:\Windows\SYSVOL" `
     -Force:$true `
     -SafeModeAdministratorPassword $safeModePassword
-  Restart-Computer
+  Restart-Computer -Force
   # This should be done after restart
   # # $userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
   # # New-ADUser `
@@ -75,10 +70,6 @@ resource openstack_compute_instance_v2 dc {
   # #   -ChangePasswordAtLogon $False `
   # #   -Enabled $True
   EOT
-
-  metadata = {
-    admin_pass = "redhat"
-  }
 
   network {
     uuid = openstack_networking_network_v2.this.id
@@ -93,8 +84,69 @@ resource openstack_compute_instance_v2 dc {
   ]
 }
 
-resource openstack_compute_floatingip_associate_v2 this {
+# TODO remove floating for dc as the set up goes through private subnet
+resource openstack_networking_floatingip_v2 dc {
+  pool = var.public-network-name
+
+  depends_on = [
+    openstack_compute_instance_v2.dc,
+  ]
+}
+
+resource openstack_compute_floatingip_associate_v2 dc {
   floating_ip = openstack_networking_floatingip_v2.dc.address
   instance_id = openstack_compute_instance_v2.dc.id
   fixed_ip    = openstack_compute_instance_v2.dc.network[0].fixed_ip_v4
+}
+
+# Guest
+resource openstack_compute_instance_v2 guest {
+
+  name              = "guest"
+  image_id        = var.guest-image-id
+  flavor_name       = var.guest-flavor-name
+  key_pair          = data.openstack_compute_keypair_v2.this.name
+  security_groups   = var.security-groups
+  user_data = <<-EOT
+  #ps1
+  # Change Admin password
+  $UserAccount = Get-LocalUser -Name "Admin"
+  $userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
+  $UserAccount | Set-LocalUser -Password $userPassword
+  #Restart-Computer -Force
+  # This should be done after restart
+  # # $userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
+  # # New-ADUser `
+  # #   -SamAccountName "crc-user" `
+  # #   -Name "crc" `
+  # #   -AccountPassword $userPassword `
+  # #   -ChangePasswordAtLogon $False `
+  # #   -Enabled $True
+  EOT
+
+  network {
+    uuid = openstack_networking_network_v2.this.id
+    # we need fixed ip to setup the primary DC
+    # fixed_ip_v4 = var.dc-fixed-ip
+  }
+
+  depends_on = [
+    openstack_networking_router_v2.this,
+    openstack_networking_router_interface_v2.router_interface_1
+  ]
+}
+
+# Create floating ip 
+resource openstack_networking_floatingip_v2 guest {
+  pool = var.public-network-name
+
+  depends_on = [
+    openstack_compute_instance_v2.guest
+  ]
+}
+
+resource openstack_compute_floatingip_associate_v2 guest {
+  floating_ip = openstack_networking_floatingip_v2.guest.address
+  instance_id = openstack_compute_instance_v2.guest.id
+  fixed_ip    = openstack_compute_instance_v2.guest.network[0].fixed_ip_v4
 }
