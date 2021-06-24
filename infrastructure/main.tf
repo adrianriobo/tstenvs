@@ -120,7 +120,7 @@ resource openstack_compute_instance_v2 guest {
 
   Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses ("192.168.199.56")
 
-  $domainUser = "Admin"
+  $domainUser = "crc.testing\Admin"
   $domainUserPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
   $domainCredentials = New-Object System.Management.Automation.PSCredential ($domainUser, $domainUserPassword)
 

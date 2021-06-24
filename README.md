@@ -1,6 +1,10 @@
 # ms-corporate
 IaC to create a corporate environment microsoft based
 
+## Overview
+
+![Overview](docs/diagrams/overview.jpg?raw=true)
+
 ## Container
 
 Build
