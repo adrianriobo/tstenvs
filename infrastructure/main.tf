@@ -63,12 +63,12 @@ resource openstack_compute_instance_v2 dc {
   Restart-Computer -Force
   # This should be done after restart
   # # $userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
-  # # New-ADUser `
-  # #   -SamAccountName "crc-user" `
-  # #   -Name "crc" `
-  # #   -AccountPassword $userPassword `
-  # #   -ChangePasswordAtLogon $False `
-  # #   -Enabled $True
+  New-ADUser `
+    -SamAccountName "crc-user" `
+    -Name "crc" `
+    -AccountPassword $userPassword `
+    -ChangePasswordAtLogon $False `
+    -Enabled $True
   EOT
 
   network {
@@ -76,6 +76,10 @@ resource openstack_compute_instance_v2 dc {
     # we need fixed ip to setup the primary DC
     # fixed_ip_v4 = var.dc-fixed-ip
     
+  }
+
+  metadata = {
+    admin_pass = "redhat"
   }
 
   depends_on = [
@@ -113,21 +117,28 @@ resource openstack_compute_instance_v2 guest {
   $UserAccount = Get-LocalUser -Name "Admin"
   $userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
   $UserAccount | Set-LocalUser -Password $userPassword
-  #Restart-Computer -Force
-  # This should be done after restart
-  # # $userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
-  # # New-ADUser `
-  # #   -SamAccountName "crc-user" `
-  # #   -Name "crc" `
-  # #   -AccountPassword $userPassword `
-  # #   -ChangePasswordAtLogon $False `
-  # #   -Enabled $True
+
+  Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses ("192.168.199.56")
+
+  $domainUser = "Admin"
+  $domainUserPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
+  $domainCredentials = New-Object System.Management.Automation.PSCredential ($domainUser, $domainUserPassword)
+
+  $guestUser = "Admin"
+  $guestUserPassword = ConvertTo-SecureString "redhat" -AsPlainText -Force
+  $guestCredentials = New-Object System.Management.Automation.PSCredential ($domainUser, $domainUserPassword)
+
+  Add-Computer -DomainName "crc.testing" -LocalCredential $guestCredentials -Credential $domainCredentials -Restart 
   EOT
 
   network {
     uuid = openstack_networking_network_v2.this.id
     # we need fixed ip to setup the primary DC
     # fixed_ip_v4 = var.dc-fixed-ip
+  }
+
+  metadata = {
+    admin_pass = "redhat"
   }
 
   depends_on = [
@@ -141,7 +152,7 @@ resource openstack_networking_floatingip_v2 guest {
   pool = var.public-network-name
 
   depends_on = [
-    openstack_compute_instance_v2.guest
+    openstack_compute_instance_v2 .guest
   ]
 }
 
