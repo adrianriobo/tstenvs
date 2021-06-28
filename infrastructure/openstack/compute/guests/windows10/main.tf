@@ -1,3 +1,40 @@
+variable project          {}
+variable image_id         { default = "c6d03c06-1bb7-4815-aebd-0d232af5f911" }
+variable flavor_name      { default = "ci.nested.m1.large.xdisk.xmem" }
+variable fixed_ip_port_id {}
+variable dc_fixed_ip      {}
+variable external_network {}
+variable keypair_name     {}
+variable security_groups  { 
+  type = list(string) 
+  default = ["default"] 
+}
+
+variable 
+
+# Domain controller config
+locals {
+   domain_controller_user_data = <<USERDATA
+#ps1
+# Change Admin password
+$UserAccount = Get-LocalUser -Name "Admin"
+$userPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
+$UserAccount | Set-LocalUser -Password $userPassword
+
+Set-DnsClientServerAddress -InterfaceIndex 6 -ServerAddresses ("192.168.199.56")
+
+$domainUser = "crc.testing\Admin"
+$domainUserPassword = ConvertTo-SecureString "redhat20.21" -AsPlainText -Force
+$domainCredentials = New-Object System.Management.Automation.PSCredential ($domainUser, $domainUserPassword)
+
+$guestUser = "Admin"
+$guestUserPassword = ConvertTo-SecureString "redhat" -AsPlainText -Force
+$guestCredentials = New-Object System.Management.Automation.PSCredential ($domainUser, $domainUserPassword)
+
+Add-Computer -DomainName "crc.testing" -LocalCredential $guestCredentials -Credential $domainCredentials -Restart
+USERDATA
+}
+
 # Data
 # Import data from existing resources
 data openstack_networking_network_v2 public-network { name = var.public-network-name }
