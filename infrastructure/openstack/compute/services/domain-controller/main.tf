@@ -96,10 +96,6 @@ resource openstack_compute_interface_attach_v2 this {
 # TODO remove floating for dc as the set up goes through private subnet
 resource openstack_networking_floatingip_v2 this {
   pool = var.external_network
-
-  # depends_on = [
-  #   openstack_compute_instance_v2.this
-  # ]
 }
 
 resource openstack_compute_floatingip_associate_v2 this {
@@ -122,7 +118,7 @@ resource null_resource dc_check {
 #!/bin/bash
 ready=1
 state="Stopped"
-while [[ $ready -gt 0 && $state != "Running" ]]
+while [[ $ready -gt 0 || $state != "Running" ]]
 do
     echo "Checking adws service on ${openstack_networking_floatingip_v2.this.address}"
     sshpass -p ${var.dc_local_admin_password} \
@@ -131,11 +127,12 @@ do
           Admin@${openstack_networking_floatingip_v2.this.address} exit
     ready=$?
     if [[ $ready -eq 0 ]]; then
-      state=$(sshpass -p ${var.dc_local_admin_password} \
-        ssh -q -o StrictHostKeyChecking=no \
-            -o UserKnownHostsFile=/dev/null \
-            Admin@${openstack_networking_floatingip_v2.this.address} \
-            'powershell.exe -command "Get-Service -Name adws | Select-Object Status -ExpandProperty Status"')
+        state=$(sshpass -p ${var.dc_local_admin_password} \
+                  ssh -q -o StrictHostKeyChecking=no \
+                      -o UserKnownHostsFile=/dev/null \
+                      Admin@${openstack_networking_floatingip_v2.this.address} \
+                      'powershell.exe -command "Get-Service -Name adws | Select-Object Status -ExpandProperty Status"' \
+                | cut -c 1-7)
     fi
 done
 echo "adws service setup OK"
@@ -172,8 +169,6 @@ resource null_resource add_dc_users {
   }
 }
 
-output public_ip  { value = openstack_networking_floatingip_v2.this.address }
-output private_ip { value = var.fixed_ip }
-
-
-
+output public_ip    { value = openstack_networking_floatingip_v2.this.address }
+output private_ip   { value = var.fixed_ip }
+output dc_readiness { value = null_resource.dc_check.id }
