@@ -50,6 +50,9 @@ Add-Computer -DomainName ${var.domain} -LocalCredential $guestCredentials -Crede
 # Need to allow domain users for local remote desktop users
 Add-LocalGroupMember -Group 'Remote Desktop Users' -Member ${join(",", formatlist("%s\\%s", var.domain, keys(var.domain_users)))}
 
+# Add domain users to local Administrator group to run crc
+Add-LocalGroupMember -Group "Administrators" -Member ${join(",", formatlist("%s\\%s", var.domain, keys(var.domain_users)))}
+
 #Specific to PSI switch ssh 
 # Remove cygwin service
 C:\cygwin\bin\cygrunsrv --stop sshd
