@@ -61,7 +61,8 @@ module windows10 {
   dc_admin_user         = "Admin"
   dc_admin_password     = var.win_local_admin_password
   dc_fixed_ip           = module.dc.private_ip
-  dc_domain             = var.domain
+  domain                = var.domain
+  domain_users          = var.domain_users
 }
 
 output dc_public_ip         { value = module.dc.public_ip }

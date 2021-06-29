@@ -7,4 +7,5 @@ New-ADUser `
     -AccountPassword $userPassword `
     -ChangePasswordAtLogon $False `
     -Enabled $True
+Add-ADGroupMember -Identity "Remote Desktop Users" -Members ${user_name}
 %{ endfor ~}

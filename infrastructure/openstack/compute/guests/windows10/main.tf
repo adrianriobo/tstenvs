@@ -2,6 +2,7 @@ variable project              {}
 # variable image_id             { default = "c6d03c06-1bb7-4815-aebd-0d232af5f911" }
 variable image_id             { default = "6de83e57-9d25-4cb8-b872-c53ef39be3b4" }
 variable image_disk_size      { default = 80 }
+variable disk_volume_type     { default = "ceph" }
 variable flavor_name          { default = "ci.nested.m1.large.xdisk.xmem" }
 variable fixed_ip_port_id     {}
 variable fixed_ip             {}
@@ -12,13 +13,14 @@ variable local_admin_password {
   sensitive = true
 }
 variable dc_readiness          { description = "ensures dc is properly setup"}
-variable dc_domain             { default = "crc.testing" }
+variable domain                {}
 variable dc_fixed_ip           {}
 variable dc_admin_user         { default = "Admin" }
 variable dc_admin_password { 
   default = "redhat20.21" 
   sensitive = true
 }
+variable domain_users           {}
 
 variable external_network       {}
 
@@ -34,7 +36,7 @@ $UserAccount | Set-LocalUser -Password $userPassword
 
 Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter -Physical).InterfaceIndex -ServerAddresses ("${var.dc_fixed_ip}")
 
-$domainUser = "${var.dc_domain}\${var.dc_admin_user}"
+$domainUser = "${var.domain}\${var.dc_admin_user}"
 $domainUserPassword = ConvertTo-SecureString ${var.dc_admin_password} -AsPlainText -Force
 $domainCredentials = New-Object System.Management.Automation.PSCredential ($domainUser, $domainUserPassword)
 
@@ -42,7 +44,11 @@ $guestUser = "Admin"
 $guestUserPassword = ConvertTo-SecureString ${var.local_admin_password} -AsPlainText -Force
 $guestCredentials = New-Object System.Management.Automation.PSCredential ($domainUser, $domainUserPassword)
 
-Add-Computer -DomainName ${var.dc_domain} -LocalCredential $guestCredentials -Credential $domainCredentials
+Add-Computer -DomainName ${var.domain} -LocalCredential $guestCredentials -Credential $domainCredentials
+
+# Enable domain users to remote desktop access 
+# Need to allow domain users for local remote desktop users
+Add-LocalGroupMember -Group 'Remote Desktop Users' -Member ${join(",", formatlist("%s\\%s", var.domain, keys(var.domain_users)))}
 
 #Specific to PSI switch ssh 
 # Remove cygwin service
@@ -59,12 +65,13 @@ Restart-Computer -Force
 USERDATA
 }
 
-# Add-Computer -DomainName ${var.dc_domain} -LocalCredential $guestCredentials -Credential $domainCredentials -Restart
+# Add-Computer -DomainName ${var.domain} -LocalCredential $guestCredentials -Credential $domainCredentials -Restart
 # Pre create volume from instance
 resource openstack_blockstorage_volume_v3 this {
   name        = "${var.project}-windows10"
   size        = var.image_disk_size
   image_id    = var.image_id
+  volume_type = var.disk_volume_type
 
   timeouts {
     create = "15m"
@@ -125,7 +132,8 @@ resource openstack_compute_floatingip_associate_v2 this {
   instance_id = openstack_compute_instance_v2.this.id
 
   depends_on = [
-    openstack_compute_interface_attach_v2.this
+    openstack_compute_interface_attach_v2.this,
+    openstack_networking_floatingip_v2.this
   ]
 }
 
