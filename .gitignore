@@ -1,2 +1,4 @@
 .*
 *.tfstate*
+id_rsa*
+*.plan*

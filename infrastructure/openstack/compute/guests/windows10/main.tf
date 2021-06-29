@@ -71,10 +71,10 @@ resource openstack_blockstorage_volume_v3 this {
   }
 }
 
-# # Wait for dc ready
+# Wait for dc ready
 resource null_resource dc_readiness {
-  triggers {
-    dependency_id = var.dc_readiness
+  triggers = {
+    dc_readiness = var.dc_readiness
   }
 }
 
