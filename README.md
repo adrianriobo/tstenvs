@@ -25,3 +25,11 @@ podman run -it --rm \
         -e OS_USER_DOMAIN_NAME=XXX \
         localhost/terraform:1.0.0
 ```
+
+### Cmds
+
+Connect win domain machine
+
+```bash
+xfreerdp /v:$WIN_IP /u:$USER_NAME /d:$DOMAIN /p:$PASSWORD /sec:tls
+```

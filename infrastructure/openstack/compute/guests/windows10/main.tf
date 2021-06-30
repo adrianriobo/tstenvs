@@ -1,6 +1,7 @@
 variable project              {}
-# variable image_id             { default = "c6d03c06-1bb7-4815-aebd-0d232af5f911" }
-variable image_id             { default = "6de83e57-9d25-4cb8-b872-c53ef39be3b4" }
+variable image_id             { default = "1a4e8018-ddb2-40f7-b0ea-50f6df1c790f" }
+#TBT 6e056717-c384-44e7-9b3c-1d045b93ebb3 1a4e8018-ddb2-40f7-b0ea-50f6df1c790f d1adc7df-d910-44af-80f9-bd9d6f4214c9
+#Tested 40G 6de83e57-9d25-4cb8-b872-c53ef39be3b4
 variable image_disk_size      { default = 80 }
 variable disk_volume_type     { default = "ceph" }
 variable flavor_name          { default = "ci.nested.m1.large.xdisk.xmem" }
@@ -91,7 +92,7 @@ resource null_resource dc_readiness {
 # Instance
 resource openstack_compute_instance_v2 this {
 
-  # # Wait for dc ready as user data will join the domain
+  # Wait for dc ready as user data will join the domain
   depends_on = [
     null_resource.dc_readiness
   ]
@@ -120,10 +121,6 @@ resource openstack_compute_instance_v2 this {
 resource openstack_compute_interface_attach_v2 this {
   instance_id = openstack_compute_instance_v2.this.id
   port_id     = var.fixed_ip_port_id
-
-  depends_on = [
-    openstack_compute_instance_v2.this
-  ]
 }
 
 resource openstack_networking_floatingip_v2 this {
@@ -135,8 +132,7 @@ resource openstack_compute_floatingip_associate_v2 this {
   instance_id = openstack_compute_instance_v2.this.id
 
   depends_on = [
-    openstack_compute_interface_attach_v2.this,
-    openstack_networking_floatingip_v2.this
+    openstack_compute_interface_attach_v2.this
   ]
 }
 
