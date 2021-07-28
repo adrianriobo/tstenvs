@@ -14,7 +14,7 @@ variable public_network       { default = "provider_net_shared_3" }
 
 # Setup
 locals {
-   rhel8_user_data = <<USERDATA
+   rhel9_user_data = <<USERDATA
 #cloud-config  
 rh_subscription:
   username: ${var.rh_user}
@@ -35,7 +35,7 @@ write_files:
   - content: |
       [baseos]
       name=baseos
-      baseurl=http://download.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5.0/compose/BaseOS/x86_64/os
+      baseurl=http://download.eng.bos.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0.0/compose/BaseOS/x86_64/os
       gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
       sslcacert=/etc/rhsm/ca/redhat-uep.pem
       enabled=1
@@ -43,7 +43,7 @@ write_files:
                                     
       [appstream]
       name=appstream
-      baseurl=http://download.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5.0/compose/AppStream/x86_64/os
+      baseurl=http://download.eng.bos.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0.0/compose/AppStream/x86_64/os
       gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
       sslcacert=/etc/rhsm/ca/redhat-uep.pem
       enabled=1
@@ -61,12 +61,12 @@ USERDATA
 # Create ephemeral resources
 resource openstack_compute_instance_v2 this {
 
-  name              = "${var.project}-rhel85"
+  name              = "${var.project}-rhel9"
   image_name        = var.rhel_version
   flavor_name       = var.flavor_name
   key_pair          = var.keypair_name
   security_groups   = var.security_groups
-  user_data         = local.rhel8_user_data
+  user_data         = local.rhel9_user_data
 
   network {
     name = var.private_network

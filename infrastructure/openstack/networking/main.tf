@@ -44,6 +44,7 @@ resource openstack_networking_port_v2 this {
 }
 
 output network_id           { value = openstack_networking_network_v2.this.id }
+output subnet_name          { value = "${var.project}_private" }
 output gateway_ip           { value = openstack_networking_subnet_v2.this.gateway_ip }
 output static_ips           { value = zipmap( openstack_networking_port_v2.this[*].all_fixed_ips[0], 
                                               openstack_networking_port_v2.this[*].id)}

@@ -1,5 +1,6 @@
 variable project              {}
 variable image_id             { default = "1a4e8018-ddb2-40f7-b0ea-50f6df1c790f" }
+# variable image_id             { default = "6e056717-c384-44e7-9b3c-1d045b93ebb3" }
 #TBT 6e056717-c384-44e7-9b3c-1d045b93ebb3 1a4e8018-ddb2-40f7-b0ea-50f6df1c790f d1adc7df-d910-44af-80f9-bd9d6f4214c9
 #Tested 40G 6de83e57-9d25-4cb8-b872-c53ef39be3b4
 variable image_disk_size      { default = 80 }
@@ -59,10 +60,33 @@ Add-LocalGroupMember -Group "Administrators" -Member ${join(",", formatlist("%s\
 C:\cygwin\bin\cygrunsrv --stop sshd
 C:\cygwin\bin\cygrunsrv --remove sshd
 
+# PS Core 
+$source = 'https://github.com/PowerShell/PowerShell/releases/download/v7.1.3/PowerShell-7.1.3-win-x64.msi'
+$destination = 'PowerShell-7.1.3-win-x64.msi'
+Invoke-WebRequest -Uri $source -OutFile $destination
+msiexec.exe /package $destination /quiet ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ENABLE_PSREMOTING=1 REGISTER_MANIFEST=1
+Remove-Item -Path $destination
+
 # Add ssh server capability
 Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
-Start-Service sshd
-Set-Service -Name sshd -StartupType 'Automatic'
+#Start-Service sshd
+#Set-Service -Name sshd -StartupType 'Automatic'
+Set-Content -Path C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\sshd.bat -Value 'powershell -command "sshd"'
+
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" -PropertyType String -Force
+New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShellCommandOption -Value "/c" -PropertyType String -Force
+
+# TODO foreach defined domain user
+# ForEach ($child in $childs) { $acl = (Get-Acl $child) $acl.SetAccessRule($rule) Set-Acl $child $acl}
+
+# ssh parent folder grant permissions
+$sshFolder = 'C:\ProgramData\ssh'
+$acl = Get-Acl $sshFolder
+$rule = New-Object System.Security.AccessControl.FileSystemAccessRule("crc.testing\crc", "FullControl", "ContainerInherit,ObjectInherit", "None", "Allow")
+$acl.SetAccessRule($rule)
+Set-Acl $sshFolder $acl
+# Use inherit permissions from parent folder
+icacls "$sshFolder\*" /q /c /t /reset
 
 # Restart computer
 Restart-Computer -Force
