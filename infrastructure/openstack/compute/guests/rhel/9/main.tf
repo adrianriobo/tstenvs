@@ -1,8 +1,10 @@
 variable project              {}
 variable rh_user              {}
 variable rh_password          {}
-variable rhel_version         { description = "Sample version RHEL-8.5.0-20210629.n.1"}
+variable rhel_version         { description = "Add expected version format"}
 variable flavor_name          { default = "ci.nested.virt.m4.xlarge.xmem" }
+variable disk_size            { default = 90 }
+variable disk_type            { default = "ceph" }
 variable keypair_name         {}
 variable security_groups { 
   type = list(string) 
@@ -14,14 +16,13 @@ variable public_network       { default = "provider_net_shared_3" }
 
 # Setup
 locals {
-   rhel9_user_data = <<USERDATA
+  rhel9_user_data = <<USERDATA
 #cloud-config  
 rh_subscription:
   username: ${var.rh_user}
   password: ${var.rh_password}
   auto-attach: True
 packages:
-  - "@virt"
   - podman
   - chrony
 package_upgrade: true
@@ -50,23 +51,50 @@ write_files:
       gpgcheck=1
     path: /etc/yum.repos.d/linterop.repo
 runcmd:
-  - dnf group install -y "Development Tools"
   - [ systemctl, daemon-reload ]
   - [ systemctl, enable, libvirtd ]
   - [ systemctl, start, --no-block, libvirtd ] 
   - [ systemctl, start, --no-block, chronyd ] 
 USERDATA
+  # Change the name to pattern with version
+  image_name = var.rhel_version
+  name = "${var.project}-rhel9"
+}
+
+data openstack_images_image_v2 this {
+  name        = local.image_name
+  most_recent = true
 }
 
 # Create ephemeral resources
-resource openstack_compute_instance_v2 this {
 
-  name              = "${var.project}-rhel9"
-  image_name        = var.rhel_version
+# Create a volume with extended disk capacity
+resource openstack_blockstorage_volume_v3 this {
+  name        = local.name
+  image_id    = data.openstack_images_image_v2.this.id
+  size        = var.disk_size
+  volume_type = var.disk_type
+
+  timeouts {
+    create = "15m"
+  }
+}
+
+
+resource openstack_compute_instance_v2 this {
+  name        = local.name
   flavor_name       = var.flavor_name
   key_pair          = var.keypair_name
   security_groups   = var.security_groups
   user_data         = local.rhel9_user_data
+
+  block_device {
+    uuid                  = openstack_blockstorage_volume_v3.this.id
+    source_type           = "volume"
+    boot_index            = 0
+    destination_type      = "volume"
+    delete_on_termination = true
+  }
 
   network {
     name = var.private_network
