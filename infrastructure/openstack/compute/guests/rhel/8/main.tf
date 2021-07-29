@@ -50,7 +50,6 @@ write_files:
       gpgcheck=1
     path: /etc/yum.repos.d/linterop.repo
 runcmd:
-  - dnf group install -y "Development Tools"
   - [ systemctl, daemon-reload ]
   - [ systemctl, enable, libvirtd ]
   - [ systemctl, start, --no-block, libvirtd ] 
