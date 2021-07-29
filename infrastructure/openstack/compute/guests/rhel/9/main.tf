@@ -82,7 +82,7 @@ resource openstack_blockstorage_volume_v3 this {
 
 
 resource openstack_compute_instance_v2 this {
-  name        = local.name
+  name              = local.name
   flavor_name       = var.flavor_name
   key_pair          = var.keypair_name
   security_groups   = var.security_groups
