@@ -4,6 +4,8 @@ variable rh_password          {}
 variable rhel_version         { description = "Sample version RHEL-8.5.0-20210629.n.1"}
 variable flavor_name          { default = "ci.nested.virt.m4.xlarge.xmem" }
 variable keypair_name         {}
+variable disk_size            { default = 90 }
+variable disk_type            { default = "ceph" }
 variable security_groups { 
   type = list(string) 
   default = ["default"] 

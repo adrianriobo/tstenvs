@@ -1,7 +1,10 @@
-variable project {}
-variable external_network {}
-variable private_subnet_cidr { default = "172.16.0.0/24" }
-variable static_ips_count { type = number }
+variable project              {}
+variable external_network     { default = "provider_net_shared_3" }
+variable private_subnet_cidr  { default = "172.16.0.0/24" }
+variable static_ips_count     { 
+  type = number 
+  default = 0
+}
 
 # Import external network for external routing
 data openstack_networking_network_v2 external_network { name = var.external_network }

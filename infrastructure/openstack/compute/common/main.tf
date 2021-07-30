@@ -1,6 +1,5 @@
 variable project {}
-variable public_key_filepath {}
-
+variable public_key_filepath { default = "id_rsa.pub" }
 
 resource openstack_compute_keypair_v2 this {
   name       = var.project
