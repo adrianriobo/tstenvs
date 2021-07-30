@@ -3,11 +3,6 @@ variable rhel_major          { description = "major version of rhel to pick the 
 variable rhel_version        {}
 variable rh_user             { default = "no-need-used-for-destroy" }
 variable rh_password         { default = "no-need-used-for-destroy" }
-
-# locals {
-#   rhel8_count =
-
-# var.a != "" ? var.a : "default-a"
   
 module networking {
   source                = "./../../../../infrastructure/openstack/networking"
