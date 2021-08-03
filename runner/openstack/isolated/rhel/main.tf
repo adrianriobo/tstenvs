@@ -1,8 +1,9 @@
 variable project             {}
-variable rhel_major          { description = "major version of rhel to pick the right module" }
-variable rhel_version        {}
-variable rh_user             { default = "no-need-used-for-destroy" }
-variable rh_password         { default = "no-need-used-for-destroy" }
+variable rhel_version        { description = "RHEL version format: RHEL-9.0.0-20210729.2" }
+variable repo_baseos_url     { description = "url for baseos repo"}
+variable repo_appstream_url  { description = "url for appstream repo"}
+variable rh_user             { description = "rh account username to subscribe"}
+variable rh_password         { description = "rh account password to subscribe"}
   
 module networking {
   source                = "./../../../../infrastructure/openstack/networking"
@@ -16,31 +17,20 @@ module common {
   project               = var.project
 }
 
-module rhel8 {
-  source                = "./../../../../infrastructure/openstack/compute/guests/rhel/8"
+module rhel {
+  source                = "./../../../../infrastructure/openstack/compute/guests/rhel"
   depends_on            = [module.networking]
-  count                 = var.rhel_major == "8" ? 1 : 0
 
   project               = var.project
   private_network       = var.project
   keypair_name          = module.common.keypair_name
+  rhel_version          = var.rhel_version
+  repo_baseos_url       = var.repo_baseos_url
+  repo_appstream_url    = var.repo_appstream_url
   rh_user               = var.rh_user
   rh_password           = var.rh_password
-  rhel_version          = var.rhel_version
-}
-
-module rhel9 {
-  source                = "./../../../../infrastructure/openstack/compute/guests/rhel/9"
-  depends_on            = [module.networking]
-  count                 = var.rhel_major == "9" ? 1 : 0
-
-  project               = var.project
-  private_network       = var.project
-  keypair_name          = module.common.keypair_name
-  rh_user               = var.rh_user
-  rh_password           = var.rh_password
-  rhel_version          = var.rhel_version
+  
 }
 
 # This module create isolated VMs as so only one public ip will be joined
-output public_ip { value = join("", [join("", module.rhel8[*].public_ip), join("", module.rhel9[*].public_ip)])  }
+output public_ip { value = module.rhel.public_ip  }
