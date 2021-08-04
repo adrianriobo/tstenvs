@@ -15,9 +15,12 @@ LABEL org.opencontainers.image.authors="ariobolo@redhat.com"
 
 COPY --from=downloader /tmp/terraform /usr/local/bin/terraform
 
+COPY . /opt/iac
+
 ENV EPEL https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 
 RUN rpm -ivh ${EPEL} \ 
     && microdnf --enablerepo=epel install -y openssh-clients sshpass ncurses \
     && microdnf clean all
 
+WORKDIR /opt/iac/runner
