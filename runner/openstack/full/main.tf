@@ -75,7 +75,7 @@ module windows10 {
 }
 
 module rhel85 {
-  source                = "./../../../infrastructure/openstack/compute/guests/rhel/8"
+  source                = "./../../../infrastructure/openstack/compute/guests/rhel"
 
   depends_on = [module.networking]
 
@@ -86,10 +86,12 @@ module rhel85 {
   rh_user               = var.rh_user
   rh_password           = var.rh_password
   rhel_version          = "RHEL-8.5.0-x86_64-nightly-latest"
+  repo_baseos_url       = "http://download.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5.0/compose/BaseOS/x86_64/os"
+  repo_appstream_url    = "http://download.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5.0/compose/AppStream/x86_64/os" 
 }
 
 module rhel9 {
-  source                = "./../../../infrastructure/openstack/compute/guests/rhel/9"
+  source                = "./../../../infrastructure/openstack/compute/guests/rhel"
 
   depends_on = [module.networking]
 
@@ -100,6 +102,8 @@ module rhel9 {
   rh_user               = var.rh_user
   rh_password           = var.rh_password
   rhel_version          = "RHEL-9.0.0-x86_64-nightly-latest"
+  repo_baseos_url       = "http://download.eng.bos.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0.0/compose/BaseOS/x86_64/os"
+  repo_appstream_url    = "http://download.eng.bos.redhat.com/rhel-9/nightly/RHEL-9-Beta/latest-RHEL-9.0.0/compose/AppStream/x86_64/os" 
 }
 
 output dc_public_ip           { value = module.dc.public_ip }

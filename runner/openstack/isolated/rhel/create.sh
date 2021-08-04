@@ -15,7 +15,7 @@ fi
 terraform init
 
 terraform plan -var project=${PROJECT} \
-            -var rhel_version=${RHEL_VERSION} \    
+            -var rhel_version=${RHEL_VERSION} \
             -var repo_baseos_url=${REPO_BASEOS_URL} \
             -var repo_appstream_url=${REPO_APPSTREAM_URL} \
             -var rh_user=${RH_USER} \

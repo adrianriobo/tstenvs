@@ -1,9 +1,9 @@
 variable project             {}
-variable rhel_version        { description = "RHEL version format: RHEL-9.0.0-20210729.2" }
-variable repo_baseos_url     { description = "url for baseos repo"}
-variable repo_appstream_url  { description = "url for appstream repo"}
-variable rh_user             { description = "rh account username to subscribe"}
-variable rh_password         { description = "rh account password to subscribe"}
+variable rhel_version        { default = "" }
+variable repo_baseos_url     { default = "" }
+variable repo_appstream_url  { default = "" }
+variable rh_user             { default = "" }
+variable rh_password         { default = "" }
   
 module networking {
   source                = "./../../../../infrastructure/openstack/networking"

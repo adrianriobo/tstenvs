@@ -1,11 +1,11 @@
 # Id
 variable project              {}
 # RHEL params
-variable rhel_version         { default = "no-need-used-for-destroy"}
-variable repo_baseos_url      { default = "no-need-used-for-destroy"}
-variable repo_appstream_url   { default = "no-need-used-for-destroy"}
-variable rh_user              { default = "no-need-used-for-destroy" }
-variable rh_password          { default = "no-need-used-for-destroy" }
+variable rhel_version         {}
+variable repo_baseos_url      {}
+variable repo_appstream_url   {}
+variable rh_user              {}
+variable rh_password          {}
 # VM params
 variable flavor_name          { default = "ci.nested.virt.m4.xlarge.xmem" }
 variable disk_size            { default = 90 }
@@ -63,7 +63,7 @@ runcmd:
 USERDATA
   # Change the name to pattern with version
   image_name = var.rhel_version
-  name = "${var.project}-rhel9"
+  name = "${var.project}-${var.rhel_version}"
 }
 
 data openstack_images_image_v2 this {
