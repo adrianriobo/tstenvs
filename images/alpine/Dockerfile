@@ -8,12 +8,14 @@ RUN apk --no-cache add zip curl \
     && curl -Lo /tmp/terraform.zip $TERRAFORM_URL \
     && unzip /tmp/terraform.zip -d /tmp/
 
+COPY . /opt/iac
+
 FROM registry.hub.docker.com/library/alpine:3.14.0
     
 LABEL org.opencontainers.image.authors="Adrian Riobo <ariobolo@redhat.com>"
 
 COPY --from=downloader /tmp/terraform /usr/local/bin/terraform
-COPY . /opt/iac
+COPY --from=downloader /opt/iac /opt/iac
 
 RUN apk --no-cache add openssh-client sshpass
 
