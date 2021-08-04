@@ -1,29 +1,33 @@
+# Id
 variable project              {}
+# RHEL params
+variable rhel_version         {}
+variable repo_baseos_url      {}
+variable repo_appstream_url   {}
 variable rh_user              {}
 variable rh_password          {}
-variable rhel_version         { description = "Sample version RHEL-8.5.0-20210629.n.1"}
+# VM params
 variable flavor_name          { default = "ci.nested.virt.m4.xlarge.xmem" }
-variable keypair_name         {}
 variable disk_size            { default = 90 }
 variable disk_type            { default = "ceph" }
+variable keypair_name         {}
+# Netowrking params
 variable security_groups { 
   type = list(string) 
   default = ["default"] 
 }
-# From persistent resources 
-variable private_network      { default = "qe-platform" }
+variable private_network      {}
 variable public_network       { default = "provider_net_shared_3" }
 
 # Setup
 locals {
-  rhel8_user_data = <<USERDATA
+  rhel_user_data = <<USERDATA
 #cloud-config  
 rh_subscription:
   username: ${var.rh_user}
   password: ${var.rh_password}
   auto-attach: True
 packages:
-  - "@virt"
   - podman
   - chrony
 package_upgrade: true
@@ -37,7 +41,7 @@ write_files:
   - content: |
       [baseos]
       name=baseos
-      baseurl=http://download.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5.0/compose/BaseOS/x86_64/os
+      baseurl=${var.repo_baseos_url}
       gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
       sslcacert=/etc/rhsm/ca/redhat-uep.pem
       enabled=1
@@ -45,7 +49,7 @@ write_files:
                                     
       [appstream]
       name=appstream
-      baseurl=http://download.eng.bos.redhat.com/rhel-8/nightly/RHEL-8/latest-RHEL-8.5.0/compose/AppStream/x86_64/os
+      baseurl=${var.repo_appstream_url}
       gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
       sslcacert=/etc/rhsm/ca/redhat-uep.pem
       enabled=1
@@ -57,9 +61,9 @@ runcmd:
   - [ systemctl, start, --no-block, libvirtd ] 
   - [ systemctl, start, --no-block, chronyd ] 
 USERDATA
-# Change the name to pattern with version
+  # Change the name to pattern with version
   image_name = var.rhel_version
-  name = "${var.project}-rhel85"
+  name = "${var.project}-${var.rhel_version}"
 }
 
 data openstack_images_image_v2 this {
@@ -81,12 +85,13 @@ resource openstack_blockstorage_volume_v3 this {
   }
 }
 
+
 resource openstack_compute_instance_v2 this {
   name              = local.name
   flavor_name       = var.flavor_name
   key_pair          = var.keypair_name
   security_groups   = var.security_groups
-  user_data         = local.rhel8_user_data
+  user_data         = local.rhel_user_data
 
   block_device {
     uuid                  = openstack_blockstorage_volume_v3.this.id

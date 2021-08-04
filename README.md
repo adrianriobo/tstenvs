@@ -1,5 +1,10 @@
-# ms-corporate
-IaC to create a corporate environment microsoft based
+# tstenvs
+IaC to multiple expected environments to test CRC  
+
+* ms corporate (ms domain wiht joined member)
+* pre released RHEL versions
+* airgap scnearios
+* security focused scenarios  
 
 ## Overview
 
