@@ -8,6 +8,7 @@ variable rh_user              {}
 variable rh_password          {}
 # VM params
 variable flavor_name          { default = "ci.nested.virt.m4.xlarge.xmem" }
+variable image_id             { default = "" }
 variable disk_size            { default = 90 }
 variable disk_type            { default = "ceph" }
 variable keypair_name         {}
@@ -61,14 +62,13 @@ runcmd:
   - [ systemctl, start, --no-block, libvirtd ] 
   - [ systemctl, start, --no-block, chronyd ] 
 USERDATA
-  # Change the name to pattern with version
-  image_name = var.rhel_version
-  name = "${var.project}-${var.rhel_version}"
+  version_numbers = split(".", split("-", var.rhel_version)[1])
+  name = "${var.project}-${join("-", local.version_numbers)}"
 }
 
-data openstack_images_image_v2 this {
-  name        = local.image_name
-  most_recent = true
+data openstack_images_image_ids_v2 this {
+  name_regex = "${var.rhel_version}*"
+  sort       = "updated_at"
 }
 
 # Create ephemeral resources
@@ -76,7 +76,7 @@ data openstack_images_image_v2 this {
 # Create a volume with extended disk capacity
 resource openstack_blockstorage_volume_v3 this {
   name        = local.name
-  image_id    = data.openstack_images_image_v2.this.id
+  image_id    = var.image_id != "" ? var.image_id : data.openstack_images_image_ids_v2.this.ids[0]
   size        = var.disk_size
   volume_type = var.disk_type
 
