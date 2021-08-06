@@ -1,6 +1,7 @@
 #!/bin/bash
 
 PROJECT="${1}"
+RHEL_VERSION="${2}"
 
 terraform init 
 
@@ -8,4 +9,5 @@ terraform init
 touch id_rsa.pub
 
 terraform destroy -auto-approve \
-                -var project=${PROJECT}
+                -var project=${PROJECT} \
+                -var rhel_version=${RHEL_VERSION}

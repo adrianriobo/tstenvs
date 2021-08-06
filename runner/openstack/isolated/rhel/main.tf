@@ -4,6 +4,7 @@ variable repo_baseos_url     { default = "" }
 variable repo_appstream_url  { default = "" }
 variable rh_user             { default = "" }
 variable rh_password         { default = "" }
+variable image_id            { default = "" }
   
 module networking {
   source                = "./../../../../infrastructure/openstack/networking"
@@ -29,7 +30,7 @@ module rhel {
   repo_appstream_url    = var.repo_appstream_url
   rh_user               = var.rh_user
   rh_password           = var.rh_password
-  
+  image_id              = var.image_id
 }
 
 # This module create isolated VMs as so only one public ip will be joined

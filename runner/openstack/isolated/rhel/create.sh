@@ -6,6 +6,7 @@ REPO_BASEOS_URL="${3}"
 REPO_APPSTREAM_URL="${4}"
 RH_USER="${5}"
 RH_PASSWORD="${6}"
+IMAGE_ID="${7:-""}"
 
 # Generate a key for the project
 if [[ ! -f id_rsa ]]; then 
@@ -20,6 +21,7 @@ terraform plan -var project=${PROJECT} \
             -var repo_appstream_url=${REPO_APPSTREAM_URL} \
             -var rh_user=${RH_USER} \
             -var rh_password=${RH_PASSWORD} \
+            -var image_id=${IMAGE_ID} \
             -out=${PROJECT}.plan
 
 terraform apply ${PROJECT}.plan
