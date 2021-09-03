@@ -121,7 +121,7 @@ resource null_resource cloud_init_wait {
   connection {
     user = "username"
     private_key = file(var.private_key_filepath)
-    host = openstack_network_floatingip_v2.this.address
+    host = openstack_networking_floatingip_v2.this.address
   }
 
   # Wait for cloud-init finish
