@@ -19,6 +19,7 @@ variable security_groups {
 }
 variable private_network      {}
 variable public_network       { default = "provider_net_shared_3" }
+variable username             { default = "cloud-user" }
 variable private_key_filepath { default = "id_rsa" }
 
 # Setup
@@ -119,7 +120,7 @@ resource null_resource cloud_init_wait {
   depends_on = [openstack_compute_floatingip_associate_v2.this]
 
   connection {
-    user = "username"
+    user = var.username
     private_key = file(var.private_key_filepath)
     host = openstack_networking_floatingip_v2.this.address
   }
