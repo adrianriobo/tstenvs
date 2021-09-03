@@ -19,6 +19,7 @@ variable security_groups {
 }
 variable private_network      {}
 variable public_network       { default = "provider_net_shared_3" }
+variable private_key_filepath { default = "id_rsa" }
 
 # Setup
 locals {
@@ -85,7 +86,6 @@ resource openstack_blockstorage_volume_v3 this {
   }
 }
 
-
 resource openstack_compute_instance_v2 this {
   name              = local.name
   flavor_name       = var.flavor_name
@@ -113,6 +113,21 @@ resource openstack_networking_floatingip_v2 this {
 resource openstack_compute_floatingip_associate_v2 this {
   floating_ip = openstack_networking_floatingip_v2.this.address
   instance_id = openstack_compute_instance_v2.this.id
+}
+
+resource null_resource cloud_init_wait {
+  depends_on = [openstack_compute_floatingip_associate_v2.this]
+
+  connection {
+    user = "username"
+    private_key = file(var.private_key_filepath)
+    host = openstack_network_floatingip_v2.this.address
+  }
+
+  # Wait for cloud-init finish
+  provisioner "remote-exec" {
+    inline = ["cloud-init status --wait"]
+  }
 }
 
 output public_ip  { value = openstack_networking_floatingip_v2.this.address }
