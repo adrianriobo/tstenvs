@@ -1,0 +1,18 @@
+FROM registry.hub.docker.com/library/alpine:3.14.0 AS downloader
+
+# TODO move to ARG
+ENV TERRAFORM_VERSION 1.0.3
+ENV TERRAFORM_URL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip 
+
+RUN apk --no-cache add zip curl \
+    && curl -Lo /tmp/terraform.zip $TERRAFORM_URL \
+    && unzip /tmp/terraform.zip -d /tmp/
+    
+FROM registry.hub.docker.com/library/alpine:3.14.0
+
+LABEL org.opencontainers.image.authors="Adrian Riobo <ariobolo@redhat.com>"
+
+COPY --from=downloader /tmp/terraform /usr/local/bin/terraform
+COPY . /opt/iac
+
+RUN apk --no-cache add openssh-client sshpass
