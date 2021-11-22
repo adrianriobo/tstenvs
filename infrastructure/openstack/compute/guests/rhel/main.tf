@@ -92,7 +92,7 @@ resource null_resource cloud_init_wait {
 
   # Wait for cloud-init finish
   provisioner "remote-exec" {
-    inline = ["cloud-init status --wait"]
+    inline = ["sudo cloud-init status --wait"]
   }
 }
 
