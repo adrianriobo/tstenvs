@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
 PROJECT="${1}"
 RHEL_VERSION="${2}"
-REPO_BASEOS_URL="${3}"
-REPO_APPSTREAM_URL="${4}"
-RH_USER="${5}"
-RH_PASSWORD="${6}"
+RH_USER="${3}"
+RH_PASSWORD="${4}"
+REPO_BASEOS_URL="${5:-""}"
+REPO_APPSTREAM_URL="${6:-""}"
 IMAGE_ID="${7:-""}"
 
 # Generate a key for the project

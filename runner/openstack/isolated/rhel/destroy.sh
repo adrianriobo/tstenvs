@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 PROJECT="${1}"
 RHEL_VERSION="${2}"
