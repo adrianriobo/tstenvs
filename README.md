@@ -13,11 +13,13 @@ IaC to multiple expected environments to test CRC
 ## Container
 
 Build
-```bash
-podman build -t terraform:1.0.0 .
+
+```bash  
+podman build -t tstenvs:dev -f build/Dockerfile . 
 ```
 
 Run
+
 ```bash
 podman run -it --rm \
         --workdir=/provision \
