@@ -1,0 +1,37 @@
+#cloud-config  
+rh_subscription:
+  username: ${rh_user}
+  password: ${rh_password}
+  auto-attach: True
+packages:
+  - podman
+package_upgrade: true
+write_files:
+  # cloud-init - NM dns management
+  # https://access.redhat.com/solutions/4757761
+  - content: |
+      [main]
+      dns = default
+    path: /etc/NetworkManager/conf.d/9A-override-99-cloud-init.conf
+%{ if length(repo_baseos_url) > 0 || length(repo_appstream_url) > 0 }
+  - content: |
+%{ if length(repo_baseos_url) > 0 }
+      [baseos]
+      name=baseos
+      baseurl=${repo_baseos_url}
+      gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+      sslcacert=/etc/rhsm/ca/redhat-uep.pem
+      enabled=1
+      gpgcheck=1
+%{ endif }
+%{ if length(repo_appstream_url) > 0 }
+      [appstream]
+      name=appstream
+      baseurl=${repo_appstream_url}
+      gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+      sslcacert=/etc/rhsm/ca/redhat-uep.pem
+      enabled=1
+      gpgcheck=1
+    path: /etc/yum.repos.d/linterop.repo
+%{ endif }
+%{ endif }
