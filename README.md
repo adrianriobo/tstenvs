@@ -1,10 +1,13 @@
 # tstenvs
+
 IaC to multiple expected environments to test CRC  
 
 * ms corporate (ms domain wiht joined member)
 * pre released RHEL versions
 * airgap scnearios
 * security focused scenarios  
+
+[![Repository on Quay](https://quay.io/repository/ariobolo/tstenvs/status "Repository on Quay")](https://quay.io/repository/ariobolo/tstenvs)
 
 ## Overview
 
@@ -22,15 +25,13 @@ Run
 
 ```bash
 podman run -it --rm \
-        --workdir=/provision \
-        -v $PWD:/provision:Z \
         -e OS_AUTH_URL=XXX \
         -e OS_USERNAME=XXX \
         -e OS_TENANT_ID=XXX \
         -e OS_PROJECT_DOMAIN_ID=XXX \
         -e OS_PASSWORD=XXX \
         -e OS_USER_DOMAIN_NAME=XXX \
-        localhost/terraform:1.0.0
+        quay.io/ariobolo/tstenvs:$VERSION
 ```
 
 ### Cmds
