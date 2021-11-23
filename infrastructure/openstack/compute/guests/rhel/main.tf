@@ -53,7 +53,8 @@ resource openstack_compute_instance_v2 this {
   key_pair          = var.keypair_name
   security_groups   = var.security_groups
   user_data         = templatefile("${path.module}/cloud-config.j2", 
-                        { rh_user             = var.rh_user,
+                        { rhel_major          = local.version_numbers[0],
+                          rh_user             = var.rh_user,
                           rh_password         = var.rh_password,
                           repo_baseos_url     = var.repo_baseos_url,
                           repo_appstream_url  = var.repo_appstream_url
@@ -92,7 +93,7 @@ resource null_resource cloud_init_wait {
 
   # Wait for cloud-init finish
   provisioner "remote-exec" {
-    inline = ["cloud-init status --wait"]
+    inline = ["sudo cloud-init status --wait"]
   }
 }
 

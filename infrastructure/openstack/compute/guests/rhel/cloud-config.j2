@@ -3,6 +3,9 @@ rh_subscription:
   username: ${rh_user}
   password: ${rh_password}
   auto-attach: True
+%{ if rhel_major == "7" }
+  enable-repo: [rhel-7-server-extras-rpms]
+%{ endif }
 packages:
   - podman
 package_upgrade: true
@@ -34,4 +37,9 @@ write_files:
       gpgcheck=1
     path: /etc/yum.repos.d/linterop.repo
 %{ endif }
+%{ endif }
+%{ if rhel_major == "7" }
+runcmd:
+  - echo "user.max_user_namespaces=28633" | tee -a /etc/sysctl.d/userns.conf
+  - sysctl -p /etc/sysctl.d/userns.conf
 %{ endif }
