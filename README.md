@@ -18,7 +18,7 @@ IaC to multiple expected environments to test CRC
 Build
 
 ```bash  
-podman build -t tstenvs:dev -f build/Dockerfile . 
+podman build -t quay.io/ariobolo/tstenvs:$VERSION -f build/alpine/Dockerfile . 
 ```
 
 Run

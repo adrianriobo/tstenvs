@@ -19,7 +19,7 @@ variable private_network      {}
 variable public_network       { default = "provider_net_shared_3" }
 variable username             { default = "cloud-user" }
 variable private_key_filepath { default = "id_rsa" }
-variable internal_ntp_server  { default = "clock.corp.redhat.com" }
+variable internal_ntp_server  { default = "" }
 
 # Setup
 locals {

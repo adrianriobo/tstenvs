@@ -3,6 +3,7 @@ variable rhel_version        { default = "RHEL-8.4.0-x86_64-production-latest"}
 variable rh_user             { default = "" }
 variable rh_password         { default = "" }
 variable image_id            { default = "" }
+variable internal_ntp_server { default = "" }
   
 module networking {
   source                = "./../../../../infrastructure/openstack/networking"
@@ -27,6 +28,7 @@ module snc_builder {
   rh_user               = var.rh_user
   rh_password           = var.rh_password
   image_id              = var.image_id
+  internal_ntp_server   = var.internal_ntp_server
 }
 
 # This module create isolated VMs as so only one public ip will be joined
