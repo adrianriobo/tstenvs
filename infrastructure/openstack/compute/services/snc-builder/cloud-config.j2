@@ -38,7 +38,9 @@ runcmd:
   - chmod +x /usr/local/bin/mc 
   - chown ${username} /usr/local/bin/mc
   - dnf group install -y "Development Tools"
+%{ if length(internal_ntp_server) > 0 }
   - echo "server ${internal_ntp_server}" | tee -a /etc/chrony.conf
   - timedatectl set-ntp true
   - systemctl enable --now chronyd
   - systemctl restart --now chronyd
+%{ endif }
