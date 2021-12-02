@@ -1,5 +1,6 @@
 variable project             {}
-variable rhel_version        { default = "RHEL-8.4.0-x86_64-production-latest"}
+variable rhel_version        {}
+variable flavor_name         {}
 variable rh_user             { default = "" }
 variable rh_password         { default = "" }
 variable image_id            { default = "" }
@@ -25,6 +26,7 @@ module snc_builder {
   private_network       = var.project
   keypair_name          = module.common.keypair_name
   rhel_version          = var.rhel_version
+  flavor_name           = var.flavor_name
   rh_user               = var.rh_user
   rh_password           = var.rh_password
   image_id              = var.image_id

@@ -1,11 +1,11 @@
 # Id
 variable project              {}
 # RHEL params
-variable rhel_version         { default = "RHEL-8.4.0-x86_64-production-latest"}
+variable rhel_version         {}
 variable rh_user              {}
 variable rh_password          {}
 # VM params
-variable flavor_name          { default = "ci.nested.virt.m4.xlarge.xmem" }
+variable flavor_name          {}
 variable image_id             { default = "" }
 variable disk_size            { default = 100 }
 variable disk_type            { default = "ceph" }
