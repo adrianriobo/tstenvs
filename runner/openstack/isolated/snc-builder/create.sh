@@ -4,6 +4,7 @@ PROJECT="${1}"
 RH_USER="${2}"
 RH_PASSWORD="${3}"
 RHEL_VERSION="${RHEL_VERSION:-"RHEL-8.4.0-x86_64-production-latest"}"
+FLAVOUR_NAME="${FLAVOUR_NAME:-"ci.nested.virt.m5.large"}"
 IMAGE_ID="${IMAGE_ID:-""}"
 INTERNAL_NTP_SERVER="${INTERNAL_NTP_SERVER:-""}"
 
@@ -16,6 +17,7 @@ terraform init
 
 terraform plan -var project=${PROJECT} \
             -var rhel_version=${RHEL_VERSION} \
+            -var flavor_name=${FLAVOUR_NAME} \
             -var rh_user=${RH_USER} \
             -var rh_password=${RH_PASSWORD} \
             -var image_id=${IMAGE_ID} \

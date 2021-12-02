@@ -3,7 +3,7 @@ variable project              {}
 # Fedora params
 variable fedora_version       {}
 # VM params
-variable flavor_name          { default = "ci.nested.virt.m4.xlarge.xmem" }
+variable flavor_name          {}
 variable image_id             { default = "" }
 variable disk_size            { default = 90 }
 variable disk_type            { default = "ceph" }

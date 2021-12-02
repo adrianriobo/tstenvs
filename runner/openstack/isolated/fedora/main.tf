@@ -1,5 +1,6 @@
 variable project             {}
-variable fedora_version      { default = "" }
+variable fedora_version      {}
+variable flavor_name         {}
 variable image_id            { default = "" }
   
 module networking {
@@ -22,6 +23,7 @@ module fedora {
   private_network       = var.project
   keypair_name          = module.common.keypair_name
   fedora_version        = var.fedora_version
+  flavor_name           = var.flavor_name
   image_id              = var.image_id
 }
 
