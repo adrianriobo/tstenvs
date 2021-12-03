@@ -1,6 +1,6 @@
 variable project             {}
 variable fedora_version      {}
-variable flavor_name         {}
+variable flavor_name         { default = "ci.nested.virt.m4.xlarge.xmem" }
 variable image_id            { default = "" }
   
 module networking {
