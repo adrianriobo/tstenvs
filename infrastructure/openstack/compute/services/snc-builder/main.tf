@@ -8,7 +8,7 @@ variable rh_password          {}
 variable flavor_name          {}
 variable image_id             { default = "" }
 variable disk_size            { default = 100 }
-variable disk_type            { default = "ceph" }
+variable disk_type            { default = "tripleo" }
 variable keypair_name         {}
 # Netowrking params
 variable security_groups { 
