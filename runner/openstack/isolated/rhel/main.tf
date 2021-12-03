@@ -1,6 +1,6 @@
 variable project             {}
 variable rhel_version        {}
-variable flavor_name         {}
+variable flavor_name         { default = "ci.nested.virt.m4.xlarge.xmem" }
 variable repo_baseos_url     { default = "" }
 variable repo_appstream_url  { default = "" }
 variable rh_user             {}

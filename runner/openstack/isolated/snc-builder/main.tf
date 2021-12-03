@@ -1,6 +1,6 @@
 variable project             {}
 variable rhel_version        {}
-variable flavor_name         {}
+variable flavor_name         { default = "ci.nested.virt.m4.xlarge.xmem" }
 variable rh_user             { default = "" }
 variable rh_password         { default = "" }
 variable image_id            { default = "" }
