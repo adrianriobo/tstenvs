@@ -1,5 +1,5 @@
 variable project             {}
-variable rhel_version        {}
+variable rhel_version        { default = "RHEL-8.4.0-x86_64-production-latest"}
 variable flavor_name         { default = "ci.nested.virt.m4.xlarge.xmem" }
 variable rh_user             { default = "" }
 variable rh_password         { default = "" }
