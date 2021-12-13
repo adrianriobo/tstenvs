@@ -1,10 +1,10 @@
 variable project             {}
-variable rhel_version        {}
+variable rhel_version        { default = "" }
 variable flavor_name         { default = "ci.nested.virt.m4.xlarge.xmem" }
 variable repo_baseos_url     { default = "" }
 variable repo_appstream_url  { default = "" }
-variable rh_user             {}
-variable rh_password         {}
+variable rh_user             { default = "" }
+variable rh_password         { default = "" }
 variable image_id            { default = "" }
   
 module networking {
