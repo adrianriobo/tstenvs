@@ -8,7 +8,8 @@ rh_subscription:
 %{ endif }
 packages:
   - podman
-package_upgrade: true
+# Do not upgrade as want to ensure fixed versions
+# package_upgrade: true
 write_files:
   # cloud-init - NM dns management
   # https://access.redhat.com/solutions/4757761
