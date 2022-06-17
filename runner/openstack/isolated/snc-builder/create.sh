@@ -3,10 +3,12 @@
 PROJECT="${1}"
 RH_USER="${2}"
 RH_PASSWORD="${3}"
-RHEL_VERSION="${RHEL_VERSION:-"RHEL-8.4.0-x86_64-production-latest"}"
+RHEL_VERSION="${RHEL_VERSION:-"RHEL-8.6.0-x86_64-released"}"
 FLAVOUR_NAME="${FLAVOUR_NAME:-"ci.nested.virt.m5.large"}"
 IMAGE_ID="${IMAGE_ID:-""}"
 INTERNAL_NTP_SERVER="${INTERNAL_NTP_SERVER:-""}"
+
+set -exuo pipefail
 
 # Generate a key for the project
 if [[ ! -f id_rsa ]]; then 

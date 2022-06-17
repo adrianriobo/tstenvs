@@ -4,6 +4,8 @@ PROJECT="${1}"
 RHEL_VERSION="${2}"
 IMAGE_ID="${3:-""}"
 
+set -exuo pipefail
+
 terraform init 
 
 #mocked id_rsa.pub for file function
