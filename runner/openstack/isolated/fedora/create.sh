@@ -5,6 +5,8 @@ FEDORA_VERSION="${2}"
 IMAGE_ID="${3:-""}"
 FLAVOUR_NAME="${FLAVOUR_NAME:-"ci.nested.virt.m4.xlarge.xmem"}"
 
+set -exuo pipefail
+
 # Generate a key for the project
 if [[ ! -f id_rsa ]]; then 
     ssh-keygen -t ecdsa -b 256 -f id_rsa -N ''
