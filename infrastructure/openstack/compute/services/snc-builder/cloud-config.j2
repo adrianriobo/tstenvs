@@ -35,8 +35,8 @@ runcmd:
   - usermod -a -G libvirt ${username}
   - echo "user.max_user_namespaces=28633" | tee -a /etc/sysctl.d/userns.conf
   - sysctl -p /etc/sysctl.d/userns.conf
-  - curl -L -sS https://dl.min.io/client/mc/release/linux-amd64/mc -o /tmp/mc
-  - mv /tmp/mc /usr/local/bin/mc
+  - dnf upgrade -y curl openssl
+  - curl -v -L -sS https://dl.min.io/client/mc/release/linux-amd64/mc -o /usr/local/bin/mc
   - chmod +x /usr/local/bin/mc 
   - chown ${username} /usr/local/bin/mc
   - dnf group install -y "Development Tools"
