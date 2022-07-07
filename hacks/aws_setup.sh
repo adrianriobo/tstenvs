@@ -8,22 +8,23 @@ aws_cmd () {
 }
 
 jq_cmd () {
-    echo '#!/bin/bash' | tee tmp-jq.sh
-    echo "jq ${2} /data" | tee -a tmp-jq.sh
+    echo '#!/bin/bash' | tee tmp-jq.sh>/dev/null
+    echo "jq ${2} /data" | tee -a tmp-jq.sh>/dev/null
     chmod +x tmp-jq.sh
-    ${CONTAINER_RUNTIME} run -v "$PWD/${1}":/data:Z -v "$PWD/tmp-jq.sh":/usr/local/bin/tmp-jq.sh:Z -ti quay.io/biocontainers/jq:1.6 tmp-jq.sh
+    result=$(${CONTAINER_RUNTIME} run -v "$PWD/${1}":/data:Z -v "$PWD/tmp-jq.sh":/usr/local/bin/tmp-jq.sh:Z -ti quay.io/biocontainers/jq:1.6 tmp-jq.sh)>/dev/null
     rm tmp-jq.sh
+    echo $result
 }
 
 # Create a group 
-group_name="${4}-infra-management"
+group_name="${4}-infra-management-${5}"
 aws_cmd "iam get-group --group-name ${group_name}"
 if [[ $? -ne 0 ]]; then 
     aws_cmd "iam create-group --group-name ${group_name}"
 fi
 
 # Create user
-user_name="${4}-tstenvs"
+user_name="${4}-${5}"
 aws_cmd "iam get-user --user-name ${user_name}"
 if [[ $? -ne 0 ]]; then 
     aws_cmd "iam create-user --user-name ${user_name}"
@@ -34,8 +35,10 @@ fi
 aws_cmd "iam add-user-to-group --user-name ${user_name} --group-name ${group_name}"
 
 # Got creds for user / sa
-jq_cmd access_key_info "'.AccessKey.AccessKeyId'"
-jq_cmd access_key_info "'.AccessKey.SecretAccessKey'"
+access_key=$(jq_cmd access_key_info "'.AccessKey.AccessKeyId'")>/dev/null
+secret_key=$(jq_cmd access_key_info "'.AccessKey.SecretAccessKey'")>/dev/null
+echo "ACCESS KEY: ${access_key}"
+echo "SECRET KEY: ${secret_key}"
 
 # Add policies to group
 # Policies
@@ -45,3 +48,10 @@ AmazonEC2FullAccess_arn="arn:aws:iam::aws:policy/AmazonEC2FullAccess"
 aws_cmd "iam attach-group-policy --group-name ${group_name} --policy-arn ${AmazonEC2FullAccess_arn}"
 IAMUserSSHKeys_arn="arn:aws:iam::aws:policy/IAMUserSSHKeys"
 aws_cmd "iam attach-group-policy --group-name ${group_name} --policy-arn ${IAMUserSSHKeys_arn}"
+AmazonS3FullAccess_arn="arn:aws:iam::aws:policy/AmazonS3FullAccess"
+aws_cmd "iam attach-group-policy --group-name ${group_name} --policy-arn ${AmazonS3FullAccess_arn}"
+
+# Create bucket for tf state
+bucket_name="${4}-${5}-tfstate"
+aws_cmd "s3api create-bucket --bucket ${bucket_name}"
+echo "BUCKET NAME: ${bucket_name}"
