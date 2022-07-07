@@ -1,15 +1,14 @@
 #!/bin/sh
 
-PROJECT="${1}"
-
 # set -exuo pipefail
 
-terraform init
+RUNNER_ID="isolated-mac-m1"
 
-terraform plan -var key-name=${PROJECT} \
-    -var aws-region=${AWS_DEFAULT_REGION} \
-    -out=${PROJECT}.plan
+terraform init -backend-config=environment/remote-state.tf
 
-terraform apply ${PROJECT}.plan
+terraform plan -var-file=environment/variables.tfvars \
+    -out=${RUNNER_ID}.plan
 
-rm ${PROJECT}.plan
+terraform apply ${RUNNER_ID}.plan
+
+rm ${RUNNER_ID}.plan
