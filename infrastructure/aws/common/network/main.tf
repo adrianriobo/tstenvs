@@ -1,37 +1,37 @@
-variable "aws-region"         {}
-variable "availability-zones" {}
-variable "vpc-subnet-cidr"    {}
-variable "intra-subnet-cidr"  {}
-variable "public-subnet-cidr" {}
-variable "project-name"       {}
+variable project_name       {}
+variable aws_region         {}
+variable availability_zones {}
+variable vpc_subnet_cidr    {}
+variable intra_subnet_cidr  {}
+variable public_subnet_cidr {}
 
 module vpc {
   source              = "terraform-aws-modules/vpc/aws"
   version             = "3.14.2"
 
-  name                  = var.project-name
-  cidr                  = var.vpc-subnet-cidr
-  azs                   = var.availability-zones
-  intra_subnets         = var.intra-subnet-cidr
-  public_subnets        = var.public-subnet-cidr
+  name                  = var.project_name
+  cidr                  = var.vpc_subnet_cidr
+  azs                   = var.availability_zones
+  intra_subnets         = var.intra_subnet_cidr
+  public_subnets        = var.public_subnet_cidr
   enable_dns_hostnames  = true
   enable_dns_support    = true
   enable_nat_gateway    = false
 
   tags = {
-    Name                = "${var.project-name}-vpc"
-    Project					    = var.project-name
+    Name                = "${var.project_name}-vpc"
+    Project					    = var.project_name
   }
 
   public_subnet_tags = {
-    Name                = "${var.project-name}-public"
-    Project             = var.project-name
+    Name                = "${var.project_name}-public"
+    Project             = var.project_name
     Tier                = "public"
   }
 
   intra_subnet_tags = {
-    Name                = "${var.project-name}-intra"
-    Project             = var.project-name
+    Name                = "${var.project_name}-intra"
+    Project             = var.project_name
     Tier                = "intra"
   }
 }
