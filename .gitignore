@@ -2,3 +2,6 @@
 *.tfstate*
 id_rsa*
 *.plan*
+hacks/awscliv2.zip
+hacks/aws
+hacks/.local

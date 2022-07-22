@@ -1,0 +1,5 @@
+# https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2launch-v2-settings.html#ec2launch-v2-task-configuration
+# Check AMI with ec2launch-v2
+version: 1.0
+tasks:
+- task: enableOpenSsh
