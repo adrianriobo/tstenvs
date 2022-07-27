@@ -66,6 +66,7 @@ Set-Acl C:\Users\${var.hyperv_username}\.ssh\authorized_keys $acl
 Set-Acl -Path "C:\ProgramData\ssh\*key" $acl
 # Create bat script to start sshd as a user process on startup
 New-Item -Path "C:\Users\${var.hyperv_username}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup" -Name start-openssh.bat -ItemType "file" -Value 'powershell -command "sshd -f C:\ProgramData\ssh\sshd_config"'
+Restart-Computer
 </powershell>
 USERDATA
 }
