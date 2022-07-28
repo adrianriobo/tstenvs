@@ -2,7 +2,7 @@
 
 # set -exuo pipefail
 
-RUNNER_ID="isolated-mac-m1"
+RUNNER_ID="isolated-windows"
 
 terraform init -backend-config=environment/remote-state.tf
 
