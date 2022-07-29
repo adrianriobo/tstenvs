@@ -1,7 +1,7 @@
 FROM registry.access.redhat.com/ubi8/ubi-minimal AS downloader
 
 # TODO move to ARG
-ENV TERRAFORM_VERSION 1.0.3
+ENV TERRAFORM_VERSION 1.2.6
 ENV TERRAFORM_URL https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip 
 
 RUN microdnf install -y zip \
