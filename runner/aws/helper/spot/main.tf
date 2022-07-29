@@ -1,45 +1,231 @@
-variable aws_region             { default = "us-east-1" } 
-variable instance_type          { default = "m5n.metal" }
-variable product_description    { default = "Windows" }
+# https://github.com/hashicorp/terraform/issues/19932
+# For the moment it is not possible to dynamic provisioning providers
+# workaround is create a module per region then from results check and offer best option
 
-data aws_availability_zones available {
-  state = "available"
+# Include non opt-in regions
+# https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
+
+module us-east-1 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.us-east-1
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
 }
 
-data aws_ec2_instance_type_offerings available {
-  for_each          = toset(data.aws_availability_zones.available.names)
-
-  filter {
-    name   = "instance-type"
-    values = [var.instance_type]
-  }
-  filter {
-    name   = "location"
-    values = [each.key]
-  }
-  location_type = "availability-zone"
+module us-east-2 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.us-east-2
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
 }
 
-data aws_ec2_spot_price this {
-  # https://github.com/hashicorp/terraform-provider-aws/issues/17446
-  # https://github.com/fivexl/terraform-aws-ec2-spot-price/issues/4#issuecomment-1064223240
-  # for_each          = toset(slice(data.aws_availability_zones.available.names,0,2))
-  for_each          = toset(flatten([for item in data.aws_ec2_instance_type_offerings.available : item.locations]))
-  availability_zone = each.key
-  instance_type     = var.instance_type
-  filter {
-    name   = "product-description"
-    values = [var.product_description]
-  }
+module us-west-1 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.us-west-1
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
 }
 
-locals {
-  price_per_az = {for k, item in data.aws_ec2_spot_price.this : k => tonumber(format("%f", item.spot_price))}
-  price_min = min([for item in data.aws_ec2_spot_price.this : item.spot_price]...)
-  az = [for k,v in local.price_per_az : k if v == local.price_min][0]
+module us-west-2 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.us-west-2
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
 }
 
-output region             { value=data.aws_availability_zones.available.id }
-output price_per_az       { value = local.price_per_az}
-output best_price         { value = local.price_min}
-output best_az            { value = local.az }
+# opt-in region
+# module af-south-1 {
+#     source              = "./../../../../infrastructure/aws/common/spot"
+#     providers           = {
+#         aws             = aws.af-south-1
+#     }
+#     instance_type       = var.instance_type
+#     product_description = var.product_description
+#     non_offer_price     = local.non_offer_price
+# }
+
+# opt-in region
+# module ap-east-1 {
+#     source              = "./../../../../infrastructure/aws/common/spot"
+#     providers           = {
+#         aws             = aws.ap-east-1
+#     }
+#     instance_type       = var.instance_type
+#     product_description = var.product_description
+#     non_offer_price     = local.non_offer_price
+# }
+
+module ap-south-1 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.ap-south-1
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+module ap-northeast-1 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.ap-northeast-1
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+module ap-northeast-2 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.ap-northeast-2
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+module ap-northeast-3 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.ap-northeast-3
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+module ap-southeast-1 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.ap-southeast-1
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+module ap-southeast-2 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.ap-southeast-2
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+# opt-in region
+# module ap-southeast-3 {
+#     source              = "./../../../../infrastructure/aws/common/spot"
+#     providers           = {
+#         aws             = aws.ap-southeast-3
+#     }
+#     instance_type       = var.instance_type
+#     product_description = var.product_description
+#     non_offer_price     = local.non_offer_price
+# }
+
+module ca-central-1 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.ca-central-1
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+module eu-central-1 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.eu-central-1
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+module eu-west-1 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.eu-west-1
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+module eu-west-2 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.eu-west-2
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+module eu-west-3 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.eu-west-3
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+# opt-in region
+# module eu-south-1 {
+#     source              = "./../../../../infrastructure/aws/common/spot"
+#     providers           = {
+#         aws             = aws.eu-south-1
+#     }
+#     instance_type       = var.instance_type
+#     product_description = var.product_description
+#     non_offer_price     = local.non_offer_price
+# }
+
+module eu-north-1 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.eu-north-1
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
+
+# opt-in region
+# module me-south-1 {
+#     source              = "./../../../../infrastructure/aws/common/spot"
+#     providers           = {
+#         aws             = aws.me-south-1
+#     }
+#     instance_type       = var.instance_type
+#     product_description = var.product_description
+#     non_offer_price     = local.non_offer_price
+# }
+
+module sa-east-1 {
+    source              = "./../../../../infrastructure/aws/common/spot"
+    providers           = {
+        aws             = aws.sa-east-1
+    }
+    instance_type       = var.instance_type
+    product_description = var.product_description
+    non_offer_price     = local.non_offer_price
+}
