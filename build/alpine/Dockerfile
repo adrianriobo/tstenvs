@@ -1,4 +1,4 @@
-FROM registry.hub.docker.com/library/alpine:3.14.0 AS downloader
+FROM registry.hub.docker.com/library/alpine:3.16.1 AS downloader
 
 # TODO move to ARG
 ENV TERRAFORM_VERSION 1.2.6
@@ -8,7 +8,7 @@ RUN apk --no-cache add zip curl \
     && curl -Lo /tmp/terraform.zip $TERRAFORM_URL \
     && unzip /tmp/terraform.zip -d /tmp/
 
-FROM registry.hub.docker.com/library/alpine:3.14.0
+FROM registry.hub.docker.com/library/alpine:3.16.1
     
 LABEL org.opencontainers.image.authors="Adrian Riobo <ariobolo@redhat.com>"
 
