@@ -3,6 +3,8 @@
 PROJECT="${1}"
 RH_USER="${2}"
 RH_PASSWORD="${3}"
+RH_SERVERURL="${RH_SERVERURL:-""}"
+RH_RHSM_BASEURL="${RH_RHSM_BASEURL:-""}"
 RHEL_VERSION="${RHEL_VERSION:-"RHEL-8.6.0-x86_64-released"}"
 FLAVOUR_NAME="${FLAVOUR_NAME:-"ci.nested.virt.m5.large"}"
 IMAGE_ID="${IMAGE_ID:-""}"
@@ -22,6 +24,8 @@ terraform plan -var project=${PROJECT} \
             -var flavor_name=${FLAVOUR_NAME} \
             -var rh_user=${RH_USER} \
             -var rh_password=${RH_PASSWORD} \
+            -var rh_serverurl=${RH_SERVERURL} \
+            -var rh_rhsm_baseurl=${RH_RHSM_BASEURL} \
             -var image_id=${IMAGE_ID} \
             -var internal_ntp_server=${INTERNAL_NTP_SERVER} \
             -out=${PROJECT}.plan

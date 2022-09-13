@@ -4,6 +4,8 @@ PROJECT="${1}"
 RHEL_VERSION="${2}"
 RH_USER="${3}"
 RH_PASSWORD="${4}"
+RH_SERVERURL="${RH_SERVERURL:-""}"
+RH_RHSM_BASEURL="${RH_RHSM_BASEURL:-""}"
 REPO_BASEOS_URL="${5:-""}"
 REPO_APPSTREAM_URL="${6:-""}"
 IMAGE_ID="${7:-""}"
@@ -25,6 +27,8 @@ terraform plan -var project=${PROJECT} \
             -var repo_appstream_url=${REPO_APPSTREAM_URL} \
             -var rh_user=${RH_USER} \
             -var rh_password=${RH_PASSWORD} \
+            -var rh_serverurl=${RH_SERVERURL} \
+            -var rh_rhsm_baseurl=${RH_RHSM_BASEURL} \
             -var image_id=${IMAGE_ID} \
             -out=${PROJECT}.plan
 

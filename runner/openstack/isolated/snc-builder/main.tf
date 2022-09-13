@@ -3,6 +3,8 @@ variable rhel_version        { default = "RHEL-8.4.0-x86_64-production-latest"}
 variable flavor_name         { default = "ci.nested.virt.m4.xlarge.xmem" }
 variable rh_user             { default = "" }
 variable rh_password         { default = "" }
+variable rh_serverurl        { default = "" }
+variable rh_rhsm_baseurl     { default = "" }
 variable image_id            { default = "" }
 variable internal_ntp_server { default = "" }
   
@@ -29,6 +31,8 @@ module snc_builder {
   flavor_name           = var.flavor_name
   rh_user               = var.rh_user
   rh_password           = var.rh_password
+  rh_serverurl          = var.rh_serverurl
+  rh_rhsm_baseurl       = var.rh_rhsm_baseurl
   image_id              = var.image_id
   internal_ntp_server   = var.internal_ntp_server
 }

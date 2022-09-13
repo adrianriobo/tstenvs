@@ -4,6 +4,8 @@ variable project              {}
 variable rhel_version         {}
 variable rh_user              {}
 variable rh_password          {}
+variable rh_serverurl         { default = "" }
+variable rh_rhsm_baseurl      { default = "" }
 # VM params
 variable flavor_name          {}
 variable image_id             { default = "" }
@@ -54,6 +56,8 @@ resource openstack_compute_instance_v2 this {
   user_data         = templatefile("${path.module}/cloud-config.j2", 
                         { rh_user             = var.rh_user,
                           rh_password         = var.rh_password,
+                          rh_serverurl        = var.rh_serverurl,
+                          rh_rhsm_baseurl     = var.rh_rhsm_baseurl,
                           username            = var.username,
                           internal_ntp_server = var.internal_ntp_server
                           })

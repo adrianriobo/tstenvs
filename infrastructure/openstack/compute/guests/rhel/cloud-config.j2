@@ -2,6 +2,12 @@
 rh_subscription:
   username: ${rh_user}
   password: ${rh_password}
+%{ if length(rh_serverurl) > 0 }
+  server-hostname: ${rh_serverurl}
+%{ endif }
+%{ if length(rh_rhsm_baseurl) > 0 }
+  rhsm-baseurl: ${rh_rhsm_baseurl}
+%{ endif }
   auto-attach: True
 %{ if rhel_major == "7" }
   enable-repo: [rhel-7-server-extras-rpms]
