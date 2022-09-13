@@ -6,6 +6,8 @@ variable repo_baseos_url      {}
 variable repo_appstream_url   {}
 variable rh_user              {}
 variable rh_password          {}
+variable rh_serverurl         { default = "" }
+variable rh_rhsm_baseurl      { default = "" }
 # VM params
 variable flavor_name          { default = "ci.nested.virt.m4.xlarge.xmem" }
 variable image_id             { default = "" }
@@ -56,6 +58,8 @@ resource openstack_compute_instance_v2 this {
                         { rhel_major          = local.version_numbers[0],
                           rh_user             = var.rh_user,
                           rh_password         = var.rh_password,
+                          rh_serverurl        = var.rh_serverurl,
+                          rh_rhsm_baseurl     = var.rh_rhsm_baseurl,
                           repo_baseos_url     = var.repo_baseos_url,
                           repo_appstream_url  = var.repo_appstream_url
                           })

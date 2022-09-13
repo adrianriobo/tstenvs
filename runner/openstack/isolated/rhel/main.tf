@@ -5,6 +5,8 @@ variable repo_baseos_url     { default = "" }
 variable repo_appstream_url  { default = "" }
 variable rh_user             { default = "" }
 variable rh_password         { default = "" }
+variable rh_serverurl        { default = "" }
+variable rh_rhsm_baseurl     { default = "" }
 variable image_id            { default = "" }
   
 module networking {
@@ -32,6 +34,8 @@ module rhel {
   repo_appstream_url    = var.repo_appstream_url
   rh_user               = var.rh_user
   rh_password           = var.rh_password
+  rh_serverurl          = var.rh_serverurl
+  rh_rhsm_baseurl       = var.rh_rhsm_baseurl
   image_id              = var.image_id
 }
 
