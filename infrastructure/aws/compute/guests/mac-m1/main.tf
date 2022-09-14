@@ -7,6 +7,7 @@ variable availability_zone              {}
 variable subnet_id                      {}   
 variable key_name                       {}
 variable root_volume_size               { default = "100"}
+variable vnc_port                       { default = 5900}
 
 resource aws_ec2_host this {
   instance_type     = var.dedicated_type
@@ -24,6 +25,22 @@ module ssh_sg {
   ingress_cidr_blocks = ["0.0.0.0/0"]
 }
 
+module "vnc_sg" {
+  source = "terraform-aws-modules/security-group/aws"
+
+  name        = "vnc"
+  vpc_id      = var.vpc_id
+
+  ingress_cidr_blocks      = ["0.0.0.0/0"]
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = var.vnc_port
+      to_port     = var.vnc_port
+      protocol    = "tcp"
+    }
+  ]
+}
+
 resource aws_instance this {
   ami                 = data.aws_ami.macos.id
   instance_type       = var.dedicated_type
@@ -33,6 +50,7 @@ resource aws_instance this {
   # Security groups
   vpc_security_group_ids = [
     module.ssh_sg.security_group_id, 
+    module.ssh_vnc.security_group_id, 
     var.vpc_default_security_group_id
   ]
   
