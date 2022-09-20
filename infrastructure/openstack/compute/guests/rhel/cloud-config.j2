@@ -8,7 +8,7 @@ rh_subscription:
 %{ if length(rh_rhsm_baseurl) > 0 }
   rhsm-baseurl: ${rh_rhsm_baseurl}
 %{ endif }
-  auto-attach: True
+  auto-attach: true
 %{ if rhel_major == "7" }
   enable-repo: [rhel-7-server-extras-rpms]
 %{ endif }
