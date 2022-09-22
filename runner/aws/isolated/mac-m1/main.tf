@@ -50,6 +50,7 @@ output key_public {
 }
 
 output macos_version_id  { value=module.compute.macos_version_id }
+# output public_ip         { value=module.compute.instance_public_ip }
 
 # # Configuration on init time with -backend-config
 terraform {
