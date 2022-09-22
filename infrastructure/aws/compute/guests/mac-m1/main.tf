@@ -50,7 +50,7 @@ resource aws_instance this {
   # Security groups
   vpc_security_group_ids = [
     module.ssh_sg.security_group_id, 
-    module.ssh_vnc.security_group_id, 
+    module.vnc_sg.security_group_id, 
     var.vpc_default_security_group_id
   ]
   
