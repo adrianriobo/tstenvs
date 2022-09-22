@@ -17,6 +17,7 @@ variable private_network      {}
 variable public_network       { default = "provider_net_shared_3" }
 variable username             { default = "fedora" }
 variable private_key_filepath { default = "id_rsa" }
+variable setup_timeout        { default = "12m" }
 
 # Setup
 locals {
@@ -85,6 +86,7 @@ resource null_resource cloud_init_wait {
     user = var.username
     private_key = file(var.private_key_filepath)
     host = openstack_networking_floatingip_v2.this.address
+    timeout = var.setup_timeout
   }
 
   # Wait for cloud-init finish
