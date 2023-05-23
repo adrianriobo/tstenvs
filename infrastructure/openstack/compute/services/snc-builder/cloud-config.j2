@@ -11,8 +11,12 @@ rh_subscription:
   auto-attach: true
 packages:
   - podman
-  - "@virt"
   - jq
+  - qemu-kvm 
+  - libvirt 
+  - virt-install 
+  - virt-viewer
+  - git
 # Do not upgrade as want to ensure fixed versions
 # package_upgrade: true
 write_files:
